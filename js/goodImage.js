@@ -4,3 +4,18 @@
  * @version 1.0.0
  * ***************************************************/
 /*global window, $, jQuery, document */
+(function ($) {
+    "use strict";
+    
+    $.fn.miniImage = function (options) {
+        var def = {
+            
+        };
+        
+        $.extend(def, options);
+        
+        return this.each(function () {
+            
+        });
+    }
+})(jQuery)
