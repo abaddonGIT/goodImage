@@ -10,6 +10,14 @@
                 width: 600px;
                 margin: 0 auto;
             }
+            
+            #imagesContener div {
+                display: inline-block;
+            }
+            
+            #imagesContener img {
+                display: block;
+            }
         </style>
     </head>
 
@@ -62,7 +70,11 @@
         </div>
         
         <script type="text/javascript">
-            
+            $(window).load(function () {
+               $('#imagesContener').goodImage({
+                   
+               }); 
+            });
         </script>
     </body>
 </html>
