@@ -9,42 +9,52 @@
 
     $.fn.goodImage = function(options) {
         var def = {
-            'maxWidth': 460, //максимальная ширина блок с картинками
+            'maxWidth': 600, //максимальная ширина блок с картинками
             'minHeight': 100, //средняя высота
             'padding': 5, //расстаяние между картинками
             'source': {},
-            'display': 'block'
+            'transitionAnimate': 0,
+            'display': 'block',
+            'contHeight': 0
         };
 
         $.extend(def, options);
 
         return this.each(function() {
 
+            if (def.contHeight !== 0) {
+                $(this).css('height', def.contHeight);
+            }
+            else {
+                $(this).css('height', 'auto');
+            }
 
             var images = def.source, //объект содержит все картинки внутри выбранного блока
-                    countImg = Object.keys(def.source).length, //кол-во картинок внутри выбранного блока
-                    image = 0,
+                    keys = Object.keys(def.source).length,
+                    countImg = keys, //кол-во картинок внутри выбранного блока
+                    image = 0, string = [], p = 0,
                     wi = [];
 
-            if (countImg === 0) {
-                countImg = images.length;
+            if (keys === 0) {
                 images = $(this).find('img');
+                countImg = images.length;
             }
 
 
 
             while (image < countImg) {
                 var count = image, width = 0, h = 0, countInString = 0, allCount = 0, maxWidth = def.maxWidth;
-                
+
                 while (width < maxWidth) {
                     var iw,
                             ih,
                             lwidth = width;
 
                     if (images[count] !== undefined) {
-                        if (countImg === 0) {
+                        if (keys === 0) {
                             iw = $(images[count]).width();
                             ih = $(images[count]).height();
+                            //console.log(images[count]);
                         }
                         else {
                             iw = images[count]['width'];
@@ -65,7 +75,7 @@
                         break;
                     }
                 }
-                
+
                 if ((width - maxWidth) < ((maxWidth + def.padding * 2) - lwidth)) {
                     countInString = count - image;
                     allCount = count;
@@ -84,7 +94,7 @@
                     var i = allCount - 1, wt = 0;
 
                     for (i; i > (allCount - countInString - 1); i--) {
-                        if (countImg === 0) {
+                        if (keys === 0) {
                             var _w = $(images[i]).width(), _h = $(images[i]).height();
                         }
                         else {
@@ -131,7 +141,7 @@
 //                    console.log(h);
                     var i = allCount - 1;
                     for (i; i > (allCount - countInString - 1); i--) {
-                        if (countImg === 0) {
+                        if (keys === 0) {
                             var _w = $(images[i]['w']).width(), _h = $(images[i]['h']).height();
                         }
                         else {
@@ -142,22 +152,62 @@
                         wi[i]['h'] = h;
                     }
                 }
-
+                string[p] = [];
+                string[p]['count'] = countInString;
+                string[p]['h'] = h;
                 image = image + countInString;
+                //console.log(h);
+                p++;
             }
 
+
             var leng = wi.length, i = 0;
-            if (countImg === 0) {
-                for (; i < leng; i++) {
-                    $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
+
+            //console.log(string);
+
+            if (def.transitionAnimate === 1) {
+                $(this).children('div').css('position', 'absolute');
+                var countST = string.length, i = 0, iter = 0, totalHeight = 5;//количество строк
+
+                for (; i < countST; i++) {
+                    //console.log(string[i][count]);
+                    for (var j = iter; j < iter + string[i]['count']; j++) {
+                        //console.log(iter);
+                        if (iter === j) {
+                            wi[iter]['left'] = 0;
+                        }
+                        else {
+                            wi[j]['left'] = wi[j - 1]['left'] + wi[j - 1]['w'] + def.padding * 2;
+                        }
+                        
+                        wi[j]['top'] = totalHeight + 10*i;
+                    }
+                    totalHeight += string[i]['h'];
+                    iter += string[i]['count'];
+                }
+                console.log(wi);
+                for (var i = 0; i < leng; i++) {
+                    $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']}).parent().css({'left': wi[i]['left'], 'top': wi[i]['top']}).css({'position': 'relative','left':'0',top:'0'});
                 }
             }
             else {
-                for (; i < leng; i++) {
-                    $(this).append('<div style="margin:' + def.padding + 'px; float: left; display:' + def.display + '"><img src="' + images[i]['link'] + '" alt="" style="width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;" /></div>');
+                if (keys === 0) {
+                    for (; i < leng; i++) {
+                        //if (def.transitionAnimate === 1) {
+                        //$(images[i]).animate({'width': wi[i]['w'], 'height': wi[i]['h']}, 2000);
+                        //}
+                        //else {
+                        $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
+                        //}
+                    }
+                }
+                else {
+                    for (; i < leng; i++) {
+                        $(this).append('<div style="margin:' + def.padding + 'px; float: left; display:' + def.display + '"><img src="' + images[i]['link'] + '" alt="" style="width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;" /></div>');
+                    }
                 }
             }
-            
+
         });
     };
 })(jQuery)
