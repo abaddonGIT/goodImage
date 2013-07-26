@@ -166,9 +166,21 @@
             //console.log(string);
 
             if (def.transitionAnimate === 1) {
-                $(this).children('div').css('position', 'absolute');
+                //$(this).children('div').css('position', 'absolute');
+                
+                var blocks = $(this).children(), b = 0;
+                //сохраняем старое состояние картинок
+                for (; b < countImg;b++) {
+                    $(blocks[b]).css({'left': $(blocks[b]).position().left, 'top': $(blocks[b]).position().top});
+                }
+                b = 0;
+                for (; b < countImg;b++) {
+                    //console.log($(blocks[b]).position().left);
+                    $(blocks[b]).css('position','absolute');
+                }
+                
                 var countST = string.length, i = 0, iter = 0, totalHeight = 5;//количество строк
-
+                //тут мы добавляем параметы left и top к массиву размеров 
                 for (; i < countST; i++) {
                     //console.log(string[i][count]);
                     for (var j = iter; j < iter + string[i]['count']; j++) {
@@ -185,9 +197,15 @@
                     totalHeight += string[i]['h'];
                     iter += string[i]['count'];
                 }
-                console.log(wi);
+                
                 for (var i = 0; i < leng; i++) {
-                    $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']}).parent().css({'left': wi[i]['left'], 'top': wi[i]['top']}).css({'position': 'relative','left':'0',top:'0'});
+//                    $(images[i]).parent().css({'top': wi[i]['top'], 'left': wi[i]['left']});
+//                    $(images[i]).parent().css({'left':'0','top':0,'position':'relative'});
+//                    $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
+                    $(images[i]).parent().delay(500).animate({'top': wi[i]['top'], 'left': wi[i]['left']}, 3000, function (){
+                        $(this).css({'left':'0','top':0,'position':'relative'});
+                    });
+                    $(images[i]).delay(500).animate({'width': wi[i]['w'], 'height': wi[i]['h']}, 3000);
                 }
             }
             else {
