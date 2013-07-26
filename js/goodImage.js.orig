@@ -9,18 +9,23 @@
 
     $.fn.goodImage = function(options) {
         var def = {
+<<<<<<< HEAD
             'maxWidth': 460, //РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ С€РёСЂРёРЅР° Р±Р»РѕРє СЃ РєР°СЂС‚РёРЅРєР°РјРё
             'minHeight': 100, //СЃСЂРµРґРЅСЏСЏ РІС‹СЃРѕС‚Р°
             'padding': 5, //СЂР°СЃСЃС‚Р°СЏРЅРёРµ РјРµР¶РґСѓ РєР°СЂС‚РёРЅРєР°РјРё
             'source': {},
             'display': 'block'
+=======
+            'maxWidth': 600, //максимальная ширина блок с картинками
+            'minHeight': 100, //средняя высота
+            'padding': 5//расстаяние между картинками
+>>>>>>> 888e7c00d3b6b0819bcea8fb3be468f153ea8835
         };
 
         $.extend(def, options);
 
         return this.each(function() {
-                    image = 0,
-                    wi = [];
+<<<<<<< HEAD
 
 
             var images = def.source, //РѕР±СЉРµРєС‚ СЃРѕРґРµСЂР¶РёС‚ РІСЃРµ РєР°СЂС‚РёРЅРєРё РІРЅСѓС‚СЂРё РІС‹Р±СЂР°РЅРЅРѕРіРѕ Р±Р»РѕРєР°
@@ -31,9 +36,6 @@
             if (countImg === 0) {
                 countImg = images.length;
                 images = $(this).find('img');
-                        width = width + Math.round((iw / ih) * def.minHeight);
-                        count++;
-                        maxWidth = maxWidth - def.padding * 2;
             }
 
 
@@ -41,12 +43,23 @@
             while (image < countImg) {
                 var count = image, width = 0, h = 0, countInString = 0, allCount = 0, maxWidth = def.maxWidth;
                 
+=======
+            var images = $(this).find('img'), //объект содержит все картинки внутри выбранного блока
+                    countImg = images.length, //кол-во картинок внутри выбранного блока
+                    image = 0,
+                    wi = [];
+
+            while (image < countImg) {
+                var count = image, width = 0, h = 0, countInString = 0, allCount = 0, maxWidth = def.maxWidth;
+
+>>>>>>> 888e7c00d3b6b0819bcea8fb3be468f153ea8835
                 while (width < maxWidth) {
                     var iw,
                             ih,
                             lwidth = width;
 
                     if (images[count] !== undefined) {
+<<<<<<< HEAD
                         if (countImg === 0) {
                             iw = $(images[count]).width();
                             ih = $(images[count]).height();
@@ -55,12 +68,20 @@
                             iw = images[count]['width'];
                             ih = images[count]['height'];
                         }
+=======
+                        iw = $(images[count]).width();
+                        ih = $(images[count]).height();
+>>>>>>> 888e7c00d3b6b0819bcea8fb3be468f153ea8835
                         width = width + Math.round((iw / ih) * def.minHeight);
                         count++;
                         maxWidth = maxWidth - def.padding * 2;
                     }
                     else {
+<<<<<<< HEAD
                         //console.log(maxWidth + '||' + width + '||' + (count - image));
+=======
+                        console.log(maxWidth + '||' + width + '||' + (count - image));
+>>>>>>> 888e7c00d3b6b0819bcea8fb3be468f153ea8835
                         if ((maxWidth - width) <= def.minHeight) {
                             h = 0;
                         }
@@ -69,6 +90,7 @@
                         }
                         break;
                     }
+<<<<<<< HEAD
                 }
                 
                 if ((width - maxWidth) < ((maxWidth + def.padding * 2) - lwidth)) {
@@ -161,10 +183,9 @@
                 for (; i < leng; i++) {
                     $(this).append('<div style="margin:' + def.padding + 'px; float: left; display:' + def.display + '"><img src="' + images[i]['link'] + '" alt="" style="width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;" /></div>');
                 }
-                            h = def.minHeight;
-                        }
-                        break;
-                    }
+            }
+            
+=======
                 }
                 if ((width - maxWidth) < ((maxWidth + def.padding * 2) - lwidth)) {
                     countInString = count - image;
@@ -213,10 +234,10 @@
                             wi[j]['w'] = wi[j]['w'] + step;
                             //console.log('after ' + wi[j]['w']);
                             j--;
-            }
-            
-        });
-    };
+                        }
+                        if (i > 0) {
+                            wi[j]['w'] = wi[j]['w'] + i;
+                        }
                     }
                     wt = 0;
                 }
@@ -244,6 +265,7 @@
             }
 
             console.log(wi);
+>>>>>>> 888e7c00d3b6b0819bcea8fb3be468f153ea8835
         });
     };
 })(jQuery)
