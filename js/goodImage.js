@@ -41,7 +41,7 @@
 
         return this.each(function() {
             $(this).children().unbind('mouseover.good mouseout.good');
-            
+
             $(this).css('position', 'relative');
 
             //переменные
@@ -225,26 +225,23 @@
                     //выстраиваем зображения
                     for (i; i < leng; i++) {
                         $(this).append('<div style="margin:' + def.padding + 'px; display:' + def.display + ';"><img src="' + images[i]['link'] + '" alt="" style="width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;" /></div>');
-                        if (i === leng - 1) {
-                            blocks = $(this).children();
-                            b = 0;
-                            //сохраняем старое состояние картинок
-                            for (b; b < countImg; b++) {
-                                $(blocks[b]).css({'left': $(blocks[b]).position().left, 'top': $(blocks[b]).position().top});
-                                if (b === countImg - 1) {
-                                    $(this).css('height', $(this).height());
-                                    blocks.css('position', 'absolute');
-                                }
-                            }
-                        }
                     }
+                    blocks = $(this).children();
+                    b = 0;
+                    //сохраняем старое состояние картинок
+                    for (b; b < countImg; b++) {
+                        $(blocks[b]).css({'left': $(blocks[b]).position().left, 'top': $(blocks[b]).position().top});
+                    }
+
+                    $(this).css('height', $(this).height());
+                    blocks.css('position', 'absolute');
                 }
             }
             //событие при наведении мыши
-            $(this).children().bind('mouseover.good', function () {
+            $(this).children().bind('mouseover.good', function() {
                 $(this).css({'border': def.hoverBorder + 'px solid #0070c0', 'margin': def.padding - def.hoverBorder});
             });
-            $(this).children().bind('mouseout.good', function () {
+            $(this).children().bind('mouseout.good', function() {
                 $(this).css({'border': 'none', 'margin': def.padding});
             });
         });
