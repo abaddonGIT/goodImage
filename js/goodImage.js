@@ -6,7 +6,47 @@
 /*global window, $, jQuery, document */
 (function($) {
     "use strict";
-    //Прерывает анимацию
+    function toObject(ob) {
+        var o = {}, ln = ob.length, i = 0;
+
+        for (i; i < ln; i++) {
+            o[i] = ob[i];
+        }
+        i = 0;
+        for (i in o) {
+            if (o[i] instanceof Array) {
+                  console.log(o[i]);
+//                o[i] = {
+////                    'w': o[i]['w'],
+////                    'h': o[i]['h'],
+////                    'left': o[i]['left'],
+////                    'top': o[i]['top']
+//                };
+            }
+        }
+        return o;
+    };
+
+    function toArray(ob) {
+        var o = [], i, ln, a = [];
+
+        for (i in ob) {
+            o[i] = ob[i];
+        }
+        i = 0;
+        ln = o.length;
+        for (i; i < ln; i++) {
+            if (o[i] instanceof Object) {
+                a[i] = [];
+                a[i]['w'] = o[i]['w'];
+                a[i]['h'] = o[i]['h'];
+                a[i]['left'] = o[i]['left'];
+                a[i]['top'] = o[i]['top'];
+            }
+        }
+        return a;
+    };
+    //РїСЂРµРєСЂР°С‰РµРЅРёРµ Р°РЅРёРјР°С†РёРё
     function breakAnimation(el, images, count) {
         var i = 0, ims;
         if (images.selector === undefined) {
@@ -25,16 +65,17 @@
 
     $.fn.goodImage = function(options) {
         var def = {
-            'maxWidth': 600, //максимальная ширина блок с картинками
-            'minHeight': 100, //средняя высота
-            'padding': 5, //расстаяние между картинками
+            'maxWidth': 600, //РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅРЅР°, РґР»СЏ Р±Р»РѕРєР° СЃ С„РѕС‚РєР°РјРё
+            'minHeight': 100, //СЃСЂРµРґРЅСЏСЏ РІС‹СЃРѕС‚Р° Рє РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ СЃС‚СЂРµРјРёС‚СЊСЃСЏ
+            'padding': 5, //РІРµР»РёС‡РёРЅР° РѕС‚СЃС‚СѓРїРѕРІ
             'source': {},
             'transitionAnimate': 0,
             'animationSpeed': 2500,
-            'delay': 200, //Задержка перед началом анимации
+            'delay': 200, //Р·Р°РґРµСЂР¶РєР° РїРµСЂРµРґ РЅР°С‡Р°Р»РѕРј Р°РЅРёРјР°С†РёРё
             'display': 'inline-block',
             'contHeight': 0,
-            'hoverBorder': 3
+            'hoverBorder': 3,
+            'cacheType': 1
         };
 
         $.extend(def, options);
@@ -44,7 +85,7 @@
 
             $(this).css('position', 'relative');
 
-            //переменные
+            //РџРµСЂРµРјРµРЅРЅС‹Рµ
             var images = def.source, th = this,
                     countST, iter, totalHeight,
                     imagesLn, keys = Object.keys(def.source).length,
@@ -53,153 +94,206 @@
                     p = 0, wi = [],
                     count, width, h, countInString,
                     allCount, maxWidth, iw, ih, lwidth,
-                    w, wt, wr, i, j, b, _w, _h, step, timer;
+                    w, wt, wr, i, j, b, _w, _h, step, timer, cache;
+
+            cache = {
+                set: function(k, v) {
+                    switch (def.cacheType) {
+                        case 1:
+                            if (def.cacheVar !== undefined) {
+                                def.cacheVar[k] = v;
+                            }
+                            break;
+                        case 2:
+                            var v = JSON.stringify(toObject(v));
+                            localStorage[k] = v;
+                            break;
+                    }
+                },
+                get: function(k) {
+                    switch (def.cacheType) {
+                        case 1:
+                            if (def.cacheVar !== undefined) {
+                                return def.cacheVar[k];
+                            }
+                            else {
+                                return false;
+                            }
+                            break;
+                        case 2:
+                            var res = toArray(JSON.parse(localStorage[k]));
+                            return res;
+                            break;
+                    }
+                }
+            };
 
             if (keys === 0) {
                 images = $(this).find('img');
                 countImg = images.length;
             }
-            //прерываем анимацию
+            //РЎС‚РѕРїР°СЂРёРј Р°РЅРёРјР°С†РёСЋ
             breakAnimation(this, images, countImg);
-            while (image < countImg) {
-                count = image;
-                width = 0;
-                h = 0;
-                countInString = 0;
-                allCount = 0;
-                maxWidth = def.maxWidth;
+            //РїСЂРѕРІРµСЂСЏРµРј РЅРµС‚ Р»Рё Р·РЅР°С‡РµРЅРёР№ РґР»СЏ С‚РµРєСѓР¶РµРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РІ РєСЌС€Рµ
+            if (!cache.get(def.maxWidth + '_' + countImg)) {
+                while (image < countImg) {
+                    count = image;
+                    width = 0;
+                    h = 0;
+                    countInString = 0;
+                    allCount = 0;
+                    maxWidth = def.maxWidth;
 
-                while (width < maxWidth) {
-                    lwidth = width;
+                    while (width < maxWidth) {
+                        lwidth = width;
 
-                    if (images[count] !== undefined) {
-                        if (keys === 0) {
-                            iw = $(images[count]).width();
-                            ih = $(images[count]).height();
+                        if (images[count] !== undefined) {
+                            if (keys === 0) {
+                                iw = $(images[count]).width();
+                                ih = $(images[count]).height();
+                            } else {
+                                iw = images[count]['width'];
+                                ih = images[count]['height'];
+                            }
+                            width = width + Math.round((iw / ih) * def.minHeight);
+                            count++;
+                            maxWidth = maxWidth - def.padding * 2;
                         } else {
-                            iw = images[count]['width'];
-                            ih = images[count]['height'];
+                            if ((maxWidth - width) <= def.minHeight) {
+                                h = 0;
+                            } else {
+                                h = def.minHeight;
+                            }
+                            break;
                         }
-                        width = width + Math.round((iw / ih) * def.minHeight);
-                        count++;
-                        maxWidth = maxWidth - def.padding * 2;
+                    }
+
+                    if ((width - maxWidth) < ((maxWidth + def.padding * 2) - lwidth)) {
+                        countInString = count - image;
+                        allCount = count;
+                        w = width;
                     } else {
-                        if ((maxWidth - width) <= def.minHeight) {
-                            h = 0;
-                        } else {
-                            h = def.minHeight;
-                        }
-                        break;
+                        countInString = count - image - 1;
+                        allCount = count - 1;
+                        w = lwidth;
                     }
+
+                    if (h === 0) {
+
+                        h = Math.floor((def.minHeight / w) * (def.maxWidth - (2 * def.padding * (countInString - 1))));
+                        i = allCount - 1;
+                        wt = 0;
+
+                        for (i; i > (allCount - countInString - 1); i--) {
+                            if (keys === 0) {
+                                _w = $(images[i]).width();
+                                _h = $(images[i]).height();
+                            } else {
+                                _w = images[i]['width'];
+                                _h = images[i]['height'];
+                            }
+                            wi[i] = [];
+                            wi[i]['w'] = Math.round(_w * h / _h);
+                            if (wi[i]['w'] > def.maxWidth) {
+                                wi[i]['w'] = def.maxWidth;
+                            }
+                            wi[i]['h'] = h;
+
+                            wt = wt + wi[i]['w'];
+                        }
+
+                        wr = 0;
+                        wr = def.maxWidth - (wt + ((countInString - 1) * def.padding * 2));
+                        if (wr !== 0) {
+                            step = 0;
+                            step = Math.ceil(wr / countInString);
+                            j = allCount - 1;
+
+                            for (i = wr; i >= step; i = i - step) {
+
+                                wi[j]['w'] = wi[j]['w'] + step;
+                                j--;
+                            }
+                            if (i > 0) {
+                                wi[j]['w'] = wi[j]['w'] + i;
+                            }
+                        }
+                        wt = 0;
+                    } else {
+                        i = allCount - 1;
+                        for (i; i > (allCount - countInString - 1); i--) {
+                            if (keys === 0) {
+                                _w = $(images[i]['w']).width();
+                                _h = $(images[i]['h']).height();
+                            } else {
+                                _w = images[i]['width'];
+                                _h = images[i]['height'];
+                            }
+                            wi[i] = [];
+                            wi[i]['w'] = Math.round(_w * h / _h);
+                            wi[i]['h'] = h;
+                        }
+                    }
+                    string[p] = [];
+                    string[p]['count'] = countInString;
+                    string[p]['h'] = h;
+                    image = image + countInString;
+                    p++;
                 }
-
-                if ((width - maxWidth) < ((maxWidth + def.padding * 2) - lwidth)) {
-                    countInString = count - image;
-                    allCount = count;
-                    w = width;
-                } else {
-                    countInString = count - image - 1;
-                    allCount = count - 1;
-                    w = lwidth;
-                }
-
-                if (h === 0) {
-
-                    h = Math.floor((def.minHeight / w) * (def.maxWidth - (2 * def.padding * (countInString - 1))));
-                    i = allCount - 1;
-                    wt = 0;
-
-                    for (i; i > (allCount - countInString - 1); i--) {
-                        if (keys === 0) {
-                            _w = $(images[i]).width();
-                            _h = $(images[i]).height();
-                        } else {
-                            _w = images[i]['width'];
-                            _h = images[i]['height'];
-                        }
-                        wi[i] = [];
-                        wi[i]['w'] = Math.round(_w * h / _h);
-                        if (wi[i]['w'] > def.maxWidth) {
-                            wi[i]['w'] = def.maxWidth;
-                        }
-                        wi[i]['h'] = h;
-
-                        wt = wt + wi[i]['w'];
-                    }
-
-                    wr = 0;
-                    wr = def.maxWidth - (wt + ((countInString - 1) * def.padding * 2));
-                    if (wr !== 0) {
-                        step = 0;
-                        step = Math.ceil(wr / countInString);
-                        j = allCount - 1;
-
-                        for (i = wr; i >= step; i = i - step) {
-
-                            wi[j]['w'] = wi[j]['w'] + step;
-                            j--;
-                        }
-                        if (i > 0) {
-                            wi[j]['w'] = wi[j]['w'] + i;
-                        }
-                    }
-                    wt = 0;
-                } else {
-                    i = allCount - 1;
-                    for (i; i > (allCount - countInString - 1); i--) {
-                        if (keys === 0) {
-                            _w = $(images[i]['w']).width();
-                            _h = $(images[i]['h']).height();
-                        } else {
-                            _w = images[i]['width'];
-                            _h = images[i]['height'];
-                        }
-                        wi[i] = [];
-                        wi[i]['w'] = Math.round(_w * h / _h);
-                        wi[i]['h'] = h;
-                    }
-                }
-                string[p] = [];
-                string[p]['count'] = countInString;
-                string[p]['h'] = h;
-                image = image + countInString;
-                p++;
+                console.log('РєСЌС€РёСЂРєРµРј');
+                //РєСЌС€РёСЂСѓРµРј РїРѕР»СѓС‡РµРЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
+                cache.set(def.maxWidth + '_' + countImg, wi);
+                cache.set(def.maxWidth + '_string_' + countImg, string);
+            } else {
+                console.log('РёР· РєСЌС€Р°');
+                wi = cache.get(def.maxWidth + '_' + countImg);
+                string = cache.get(def.maxWidth + '_string_' + countImg);
             }
-
+            
+            console.log(toObject(wi));
 
             leng = wi.length;
             i = 0;
 
             if (def.transitionAnimate === 1) {
 
-                blocks = $(this).children();
-                b = 0;
-                //сохраняем старое состояние картинок
-                for (b; b < countImg; b++) {
-                    $(blocks[b]).css({'left': $(blocks[b]).position().left, 'top': $(blocks[b]).position().top});
-                    if (b === countImg - 1) {
-                        blocks.css('position', 'absolute');
-                    }
-                }
+//                blocks = $(this).children();
+//                b = 0;
+//                //СЃРѕС…СЂР°РЅСЏРµРј СЃС‚Р°СЂРѕРµ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ РєР°СЂС‚РёРЅРѕРє РЅР° СЃС‚СЂР°РЅРёС†Рµ
+//                for (b; b < countImg; b++) {
+//                    $(blocks[b]).css({'left': $(blocks[b]).position().left, 'top': $(blocks[b]).position().top});
+//                    if (b === countImg - 1) {
+//                        blocks.css('position', 'absolute');
+//                    }
+//                }
 
-                countST = string.length;
-                i = 0;
-                iter = 0;
-                totalHeight = def.padding;//количество строк
-                //тут мы добавляем параметы left и top к массиву размеров 
-                for (i; i < countST; i++) {
-                    for (j = iter; j < iter + string[i]['count']; j++) {
-                        if (iter === j) {
-                            wi[iter]['left'] = 0;
-                        } else {
-                            wi[j]['left'] = wi[j - 1]['left'] + wi[j - 1]['w'] + def.padding * 2;
+                if (!cache.get(def.maxWidth + '_' + countImg) || cache.get(def.maxWidth + '_' + countImg)[0]['left'] === undefined) {
+                    countST = string.length;
+                    i = 0;
+                    iter = 0;
+                    totalHeight = def.padding;//РѕР±С‰Р°СЏ РІС‹СЃРѕС‚Р°
+                    //РЎРѕС…СЂР°РЅСЏРµРј РЅР°СЃРѕСЏС‰РёРµ РїРѕР»РѕР¶РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ 
+                    for (i; i < countST; i++) {
+                        for (j = iter; j < iter + string[i]['count']; j++) {
+                            if (iter === j) {
+                                wi[iter]['left'] = 0;
+                            } else {
+                                wi[j]['left'] = wi[j - 1]['left'] + wi[j - 1]['w'] + def.padding * 2;
+                            }
+
+                            wi[j]['top'] = totalHeight + 10 * i;
                         }
-
-                        wi[j]['top'] = totalHeight + 10 * i;
+                        totalHeight += string[i]['h'];
+                        iter += string[i]['count'];
                     }
-                    totalHeight += string[i]['h'];
-                    iter += string[i]['count'];
+                    //Р”РѕРїРѕР»РЅСЏРµРј РєСЌС€
+                    console.log('РґРѕРїРѕР»РЅСЏРµРј РєСЌС€');
+                    cache.set(def.maxWidth + '_' + countImg, wi);
+                } else {
+                    console.log('Р±РµСЂРµРј СЂРµР·СѓР»СЊС‚Р° РёР· РєСЌС€Р°');
+                    wi = cache.get(def.maxWidth + '_' + countImg);
                 }
+
                 if (keys === 0) {
                     for (i = 0; i < leng; i++) {
                         $(images[i]).parent().delay(def.delay).animate({'top': wi[i]['top'], 'left': wi[i]['left']}, def.animationSpeed);
@@ -222,13 +316,13 @@
                         $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
                     }
                 } else {
-                    //выстраиваем зображения
+                    //СЃС‚СЂРѕРёРј РєР°СЂС‚РёРЅРєРё
                     for (i; i < leng; i++) {
                         $(this).append('<div style="margin:' + def.padding + 'px; display:' + def.display + ';"><img src="' + images[i]['link'] + '" alt="" style="width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;" /></div>');
                     }
                     blocks = $(this).children();
                     b = 0;
-                    //сохраняем старое состояние картинок
+                    //Р·Р°РєСЂРµРїР»СЏРµРј РёС… РЅР° РјРµСЃС‚Р°С…
                     for (b; b < countImg; b++) {
                         $(blocks[b]).css({'left': $(blocks[b]).position().left, 'top': $(blocks[b]).position().top});
                     }
@@ -237,7 +331,7 @@
                     blocks.css('position', 'absolute');
                 }
             }
-            //событие при наведении мыши
+            //РЎРѕР±С‹С‚РёСЏ РїСЂРё РЅР°РІРµРґРµРЅРё
             $(this).children().bind('mouseover.good', function() {
                 $(this).css({'border': def.hoverBorder + 'px solid #0070c0', 'margin': def.padding - def.hoverBorder});
             });

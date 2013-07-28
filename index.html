@@ -34,8 +34,11 @@
         </div>
 
         <script type="text/javascript">
+            var CACHE = {};
+            
             $(window).load(function() {
                 $('#imagesContener').goodImage({
+                    'cacheVar': CACHE,
                     'source': {
                         0: {
                             'link': 'img/01.jpg',
@@ -189,9 +192,9 @@
                 $(window).scroll(function() {
                     if ($(window).scrollTop() > 150) {
                         if (bot === 0) {
-                            console.log();
                             $('#imagesContener').css('width', 810);
                             $('#imagesContener').goodImage({
+                                'cacheVar': CACHE,
                                 'maxWidth': 800,
                                 'transitionAnimate': 1,
                                 'source': {
@@ -351,6 +354,7 @@
                         if (top === 0) {
                             $('#imagesContener').css('width', 610);
                             $('#imagesContener').goodImage({
+                                'cacheVar': CACHE,
                                 'maxWidth': 600,
                                 'transitionAnimate': 1,
                                 'source': {
