@@ -7,7 +7,7 @@
 (function($) {
     "use strict";
     function toObject(ob) {
-        var o = {}, ln = ob.length, i = 0;
+        var o = {}, ln = ob.length, i = 0, a = [];
 
         for (i; i < ln; i++) {
             o[i] = ob[i];
@@ -15,37 +15,38 @@
         i = 0;
         for (i in o) {
             if (o[i] instanceof Array) {
-                  console.log(o[i]);
-//                o[i] = {
-////                    'w': o[i]['w'],
-////                    'h': o[i]['h'],
-////                    'left': o[i]['left'],
-////                    'top': o[i]['top']
-//                };
+                a[i] = o[i];
+                o[i] = {};
+                $.extend(o[i], a[i]);
             }
         }
         return o;
-    };
+    }
+    ;
 
     function toArray(ob) {
-        var o = [], i, ln, a = [];
+        var o = [], i, ln = 0, a = {}, k;
 
         for (i in ob) {
+            o[i] = [];
             o[i] = ob[i];
         }
+        
+        ln = o.length; 
         i = 0;
-        ln = o.length;
+        
         for (i; i < ln; i++) {
             if (o[i] instanceof Object) {
-                a[i] = [];
-                a[i]['w'] = o[i]['w'];
-                a[i]['h'] = o[i]['h'];
-                a[i]['left'] = o[i]['left'];
-                a[i]['top'] = o[i]['top'];
+                a = o[i];
+                o[i] = [];
+                for (k in a) {
+                    o[i][k] = a[k];
+                }
             }
         }
-        return a;
-    };
+        return o;
+    }
+    ;
     //прекращение анимации
     function breakAnimation(el, images, count) {
         var i = 0, ims;
@@ -121,8 +122,7 @@
                             }
                             break;
                         case 2:
-                            var res = toArray(JSON.parse(localStorage[k]));
-                            return res;
+                            return toArray(JSON.parse(localStorage[k]));
                             break;
                     }
                 }
@@ -250,8 +250,6 @@
                 string = cache.get(def.maxWidth + '_string_' + countImg);
             }
             
-            console.log(toObject(wi));
-
             leng = wi.length;
             i = 0;
 
@@ -293,7 +291,7 @@
                     console.log('берем результа из кэша');
                     wi = cache.get(def.maxWidth + '_' + countImg);
                 }
-
+                
                 if (keys === 0) {
                     for (i = 0; i < leng; i++) {
                         $(images[i]).parent().delay(def.delay).animate({'top': wi[i]['top'], 'left': wi[i]['left']}, def.animationSpeed);
