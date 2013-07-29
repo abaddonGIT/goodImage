@@ -10,7 +10,7 @@
                 width: 610px;
                 margin: 0 auto;
             }
-            
+
             #in {
                 width: 610px;
                 margin: 0 -5px;
@@ -29,76 +29,67 @@
     <body>
         <h1>Good image DEMO</h1>
 
-       
-            <div id="in">
-                <div><img src="img/01.jpg" alt=""/></div>
-                <div>
-                    <img src="img/02.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/03.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/04.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/05.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/06.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/07.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/08.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/09.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/001.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/002.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/003.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/005.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/006.jpg" alt=""/>
-                </div>
-                 <div><img src="img/01.jpg" alt=""/></div>
-                  <div>
-                    <img src="img/01.jpg" alt=""/>
-                </div>
-                 <div>
-                    <img src="img/01.jpg" alt=""/>
-                </div>
-                 <div>
-                    <img src="img/006.jpg" alt=""/>
-                </div>
-                 <div>
-                    <img src="img/001.jpg" alt=""/>
-                </div>
-                <div>
-                    <img src="img/002.jpg" alt=""/>
-                </div>
-                 <div>
-                    <img src="img/03.jpg" alt=""/>
-                </div>
-                 <div>
-                    <img src="img/002.jpg" alt=""/>
-                </div>
-            </div>
-        
+
+        <div id="in">
+            
+        </div>
+
 
         <script type="text/javascript">
             $(window).load(function() {
                 $('#in').goodImage({
+                    'source': {
+                        '0': {
+                            'src': 'img/01.jpg',
+                            'w': 400,
+                            'h': 1200
+                        },
+                        '1': {
+                            'src': 'img/02.jpg',
+                            'w': 400,
+                            'h': 1200
+                        },
+                        '2': {
+                            'src': 'img/001.jpg',
+                            'w': 1910,
+                            'h': 1074
+                        },
+                        '3': {
+                            'src': 'img/003.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '4': {
+                            'src': 'img/005.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '5': {
+                            'src': 'img/006.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '6': {
+                            'src': 'img/001.jpg',
+                            'w': 1910,
+                            'h': 1074
+                        },
+                        '7': {
+                            'src': 'img/003.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '8': {
+                            'src': 'img/005.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '9': {
+                            'src': 'img/006.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        }
+                    }
                 });
             });
         </script>

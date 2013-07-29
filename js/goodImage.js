@@ -11,34 +11,50 @@
         var def = {
             'maxWidth': 600, //максимальная ширина блок с картинками
             'minHeight': 100, //средняя высота
-            'padding': 5//расстаяние между картинками
+            'padding': 5, //расстаяние между картинками
+            'source': {}
         };
 
         $.extend(def, options);
 
         return this.each(function() {
-            var images = $(this).find('img'), //объект содержит все картинки внутри выбранного блока
-                    countImg = images.length, //кол-во картинок внутри выбранного блока
+
+
+            var images = def.source, //объект содержит все картинки внутри выбранного блока
+                    countImg = Object.keys(def.source).length, //кол-во картинок внутри выбранного блока
                     image = 0,
                     wi = [];
 
+            if (countImg === 0) {
+                countImg = images.length;
+                images = $(this).find('img');
+            }
+
+
+
             while (image < countImg) {
                 var count = image, width = 0, h = 0, countInString = 0, allCount = 0, maxWidth = def.maxWidth;
-
+                
                 while (width < maxWidth) {
                     var iw,
                             ih,
                             lwidth = width;
 
                     if (images[count] !== undefined) {
-                        iw = $(images[count]).width();
-                        ih = $(images[count]).height();
+                        if (countImg === 0) {
+                            iw = $(images[count]).width();
+                            ih = $(images[count]).height();
+                        }
+                        else {
+                            iw = images[count]['w'];
+                            ih = images[count]['h'];
+                        }
                         width = width + Math.round((iw / ih) * def.minHeight);
                         count++;
                         maxWidth = maxWidth - def.padding * 2;
                     }
                     else {
-                        console.log(maxWidth + '||' + width + '||' + (count - image));
+                        //console.log(maxWidth + '||' + width + '||' + (count - image));
                         if ((maxWidth - width) <= def.minHeight) {
                             h = 0;
                         }
@@ -48,6 +64,7 @@
                         break;
                     }
                 }
+                
                 if ((width - maxWidth) < ((maxWidth + def.padding * 2) - lwidth)) {
                     countInString = count - image;
                     allCount = count;
@@ -58,16 +75,21 @@
                     allCount = count - 1;
                     var w = lwidth;
                 }
-         
-                if (h === 0) {       
+
+                if (h === 0) {
 
                     h = Math.floor((def.minHeight / w) * (def.maxWidth - (2 * def.padding * (countInString - 1))));
-
 //console.log(h);
                     var i = allCount - 1, wt = 0;
 
                     for (i; i > (allCount - countInString - 1); i--) {
-                        var _w = $(images[i]).width(), _h = $(images[i]).height();
+                        if (countImg === 0) {
+                            var _w = $(images[i]).width(), _h = $(images[i]).height();
+                        }
+                        else {
+                            var _w = images[i]['w'], _h = images[i]['h'];
+                        }
+                        //var _w = $(images[i]).width(), _h = $(images[i]).height();
 
                         wi[i] = [];
                         wi[i]['w'] = Math.round(_w * h / _h);
@@ -103,13 +125,17 @@
                     wt = 0;
                 }
                 else {
-                    
+
                     //h = Math.floor((def.minHeight / w) * (def.maxWidth - (2 * def.padding * (countInString - 1))));
 //                    console.log(h);
                     var i = allCount - 1;
                     for (i; i > (allCount - countInString - 1); i--) {
-                        var _w = $(images[i]).width(), _h = $(images[i]).height();
-
+                        if (countImg === 0) {
+                            var _w = $(images[i]['w']).width(), _h = $(images[i]['h']).height();
+                        }
+                        else {
+                            var _w = images[i]['w'], _h = images[i]['h'];
+                        }
                         wi[i] = [];
                         wi[i]['w'] = Math.round(_w * h / _h);
                         wi[i]['h'] = h;
@@ -120,12 +146,18 @@
             }
 
             var leng = wi.length, i = 0;
-
-            for (; i < leng; i++) {
-                $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
+            if (countImg === 0) {
+                for (; i < leng; i++) {
+                    $(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
+                }
             }
-
-            console.log(wi);
+            else {
+                for (; i < leng; i++) {
+                    $(this).append('<div style="margin:' + def.padding + 'px;"><img src="' + images[i]['src'] + '" alt="" style="width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;" /></div>');
+                    //$(images[i]).css({'width': wi[i]['w'], 'height': wi[i]['h']});
+                }
+            }
+            //console.log(wi);
         });
     };
 })(jQuery)
