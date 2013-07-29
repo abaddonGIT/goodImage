@@ -8,6 +8,14 @@
         <style type="text/css">
             #imagesContener {
                 width: 610px;
+<<<<<<< HEAD
+                margin: 0 auto;
+            }
+
+            #in {
+                width: 610px;
+=======
+>>>>>>> 841078ca404953cdb18b227deb519d3d7f70882c
                 margin: 0 -5px;
                 font-size:0;
                 line-height:0;
@@ -29,14 +37,77 @@
     <body>
         <h1>Good image DEMO</h1>
 
+<<<<<<< HEAD
+
+        <div id="in">
+            
+        </div>
+
+=======
         <div id="imagesContener">
 
         </div>
+>>>>>>> 841078ca404953cdb18b227deb519d3d7f70882c
 
         <script type="text/javascript">
             var CACHE = {};
             
             $(window).load(function() {
+<<<<<<< HEAD
+                $('#in').goodImage({
+                    'source': {
+                        '0': {
+                            'src': 'img/01.jpg',
+                            'w': 400,
+                            'h': 1200
+                        },
+                        '1': {
+                            'src': 'img/02.jpg',
+                            'w': 400,
+                            'h': 1200
+                        },
+                        '2': {
+                            'src': 'img/001.jpg',
+                            'w': 1910,
+                            'h': 1074
+                        },
+                        '3': {
+                            'src': 'img/003.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '4': {
+                            'src': 'img/005.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '5': {
+                            'src': 'img/006.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '6': {
+                            'src': 'img/001.jpg',
+                            'w': 1910,
+                            'h': 1074
+                        },
+                        '7': {
+                            'src': 'img/003.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '8': {
+                            'src': 'img/005.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        },
+                        '9': {
+                            'src': 'img/006.jpg',
+                            'w': 1920,
+                            'h': 1080
+                        }
+                    }
+=======
                 $('#imagesContener').goodImage({
                     'cacheVar': CACHE,
                     'source': {
@@ -511,6 +582,7 @@
                     }
 
 
+>>>>>>> 841078ca404953cdb18b227deb519d3d7f70882c
                 });
             });
         </script>
