@@ -1,7 +1,7 @@
 /******************************************************
  * Copyright 2013 by Abaddon <abaddongit@gmail.com>
  * @author Abaddon <abaddongit@gmail.com>
- * @version 1.0.0
+ * @version 1.0.1
  * ***************************************************/
 /*global window, $, jQuery, document */
 (function ($) {
@@ -18,12 +18,16 @@
         //отслеживание изменения рамера контейнера
         this.adEvent();
     }
-
+    /*
+    *Подготавливает перед пуском (удалет прослушку событий и рвет анимации)
+    */
     simpleImage.prototype.preparation = function () {
         var m = {};
         this.el.style.position = 'relative';
         this.el.style.overflow = 'hidden';
         this.el.style.width = this.config.maxWidth + this.config.padding * 2 + 'px';
+        //сносим события ресайзов
+        window.removeEventListener('resize');
 
         var i = 0, ims;
         if (this.images.selector === undefined) {
@@ -50,7 +54,11 @@
             this.images = m;
         }
     }
-
+    /*
+    * Получаем объект дом javascript из переданного html кода
+    * @param {String} html-код
+    * @return {Object} 
+    */
     simpleImage.prototype.setElement = function (html) {
         var div = document.createElement('div');
         div.innerHTML = html;
@@ -58,7 +66,9 @@
         div.removeChild(el);
         return el;
     }
-    //Добавляет прослушку событий изменения размера контейнера
+    /*
+    *Добавляет прослушку событий изменения размера контейнера
+    */
     simpleImage.prototype.adEvent = function () {
         var widthBody,
             el = this.el,
@@ -68,7 +78,7 @@
             resizeLurking = function () {
                 if (+new Date - time >= TIME_IDLE) {
                     widthBody = $('html').width();
-                    //console.log(widthBody + '||' + fun.config.minWidth);
+                    
                     if (widthBody < fun.config.minWidth) {
                         fun.config.maxWidth = fun.config.minWidth;
                     } else {
@@ -126,7 +136,9 @@
             default:
         }
     }
-
+    /*
+    * Рассчет размеров для картинок
+    */
     simpleImage.prototype.calculation = function () {
         var images = this.images, //Содержит инфу о картинках
             countImg = this.countImg, //Общее кол-во картинок
@@ -242,7 +254,10 @@
         this.string = string; //содержит параметры строк (их высоту и кол-во картинок в них)
         this.wi = wi;
     }
-
+    /*
+    * Выстраивает изображения и осуществляет анимацию при перемещении
+    * @param {Boolean} ключ указывает надо ли включать анимацию
+    */
     simpleImage.prototype.building = function (animation) {
         var def = this.config, i = 0;
         //расчет размеров картинки
