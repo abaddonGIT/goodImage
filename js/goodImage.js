@@ -135,6 +135,16 @@
                 break;
             default:
         }
+
+        //событие для перестройки картинок
+        $(el).bind('relode', function (event, newData) {
+            var nw = JSON.parse(newData);
+            fun.config.maxWidth = el.offsetHeight;
+            fun.images = nw;
+            fun.countImg = nw.length;
+            fun.jqueryImages = $(el).find('img' + '.' + this.config.imgClass);
+            fun.building(true); 
+        });
     }
     /*
     * Рассчет размеров для картинок
