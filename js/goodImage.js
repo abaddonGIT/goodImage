@@ -61,7 +61,7 @@
             this.jQueryImages = this.images;
             this.images = m;
         }
-    }
+    };
     /*
     * Получаем объект дом javascript из переданного html кода
     * @param {String} html-код
@@ -73,7 +73,7 @@
         var el = div.childNodes[0];
         div.removeChild(el);
         return el;
-    }
+    };
     /*
     *Добавляет прослушку событий изменения размера контейнера
     */
@@ -131,7 +131,7 @@
                     }
                     step++;
 
-                }
+                };
                 break;
             case 2:
                 window.addEventListener('resize', function () {
@@ -142,7 +142,7 @@
                 }, 1);
                 break;
             default:
-        }
+        };
 
         //Событие для перезагрузки картинок
         $(el).bind('relode', function (event, newData) {
@@ -153,7 +153,7 @@
             fun.jQueryImages = $(el).find('img' + '.' + fun.config.imgClass);
             fun.building(true);
         });
-    }
+    };
     /*
     * Рассчет размеров для картинок
     */
@@ -271,7 +271,7 @@
         }
         this.string = string; //содержит параметры строк (их высоту и кол-во картинок в них)
         this.wi = wi;
-    }
+    };
     /*
     * Выстраивает изображения и осуществляет анимацию при перемещении
     * @param {Boolean} ключ указывает надо ли включать анимацию
@@ -296,7 +296,7 @@
                     $(this.jQueryImages[i]).css({'width': this.wi[i]['w'] + 'px', 'height': this.wi[i]['h'] + 'px'});
 
                     //стили оберток
-                    if (this.jQueryImages[i].parentNode != null) {
+                    if (this.jQueryImages[i].parentNode !== null) {
                         $(this.jQueryImages[i]).parent().css({
                             'width': this.wi[i]['w'] + 'px',
                             'height': this.wi[i]['h'] + 'px',
@@ -398,7 +398,7 @@
             }
             this.el.style.height = totalHeight + 20 + 'px';
         }
-    }
+    };
 
     $.fn.goodImage = function (options) {
         var def = {
