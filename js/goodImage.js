@@ -13,6 +13,14 @@
         this.images = def.source || $(el).find('img' + '.' + this.config.imgClass); //тут оказывается либо объект с описанием картинок либо объект jQuery с этими картинками
         this.countImg = this.images.length || Object.keys(this.images).length;
         this.defWidth = this.config.maxWidth;
+        //опредяем поддержку анимации на css
+        if ("transition" in document.createElement('div').style) {
+            this.trans = true;
+
+        } else {
+            this.trans = false;
+        }
+
         //расчет положения картинок
         this.building();
         //отслеживание изменения рамера контейнера
@@ -27,7 +35,7 @@
         this.el.style.overflow = 'hidden';
         this.el.style.width = this.config.maxWidth + this.config.padding * 2 + 'px';
         //сносим события ресайзов
-        window.removeEventListener('resize');
+        //window.removeEventListener('resize',1);
 
         var i = 0, ims;
         if (this.images.selector === undefined) {
@@ -272,6 +280,7 @@
         var def = this.config, i = 0;
         //расчет размеров картинки
         this.calculation();
+        //var wi = this.wi;
 
         //строим картинки
         this.el.style.fontSize = 0;
@@ -284,18 +293,22 @@
 
                 for (i; i < this.countImg; i++) {
                     //стили картинок
-                    this.jQueryImages[i].style.width = this.wi[i]['w'] + 'px';
-                    this.jQueryImages[i].style.height = this.wi[i]['h'] + 'px';
+                    $(this.jQueryImages[i]).css({'width': this.wi[i]['w'] + 'px', 'height': this.wi[i]['h'] + 'px'});
+
                     //стили оберток
                     if (this.jQueryImages[i].parentNode != null) {
-                        this.jQueryImages[i].parentNode.style.width = this.wi[i]['w'] + 'px';
-                        this.jQueryImages[i].parentNode.style.height = this.wi[i]['h'] + 'px';
-                        this.jQueryImages[i].parentNode.style.margin = def.padding + 'px';
-                        this.jQueryImages[i].parentNode.style.display = 'inline-block';
+                        $(this.jQueryImages[i]).parent().css({
+                            'width': this.wi[i]['w'] + 'px',
+                            'height': this.wi[i]['h'] + 'px',
+                            'margin': def.padding + 'px',
+                            'display': 'inline-block'
+                        });
                         this.jQueryImages[i].parentNode.style.left = this.jQueryImages[i].parentNode.offsetLeft - def.padding + 'px';
                         this.jQueryImages[i].parentNode.style.top = this.jQueryImages[i].parentNode.offsetTop - def.padding + 'px';
                     } else {
-                        this.jQueryImages[i].style.margin = def.padding;
+                        $(this.jQueryImages[i]).css({
+                            'margin': def.padding + 'px'
+                        });
                         this.jQueryImages[i].style.left = this.jQueryImages[i].offsetLeft + 'px';
                         this.jQueryImages[i].style.top = this.jQueryImages[i].offsetTop + 'px';
                     }
@@ -308,26 +321,28 @@
                 }
                 this.el.style.height = $(this.el).height() + 'px';
                 //делаем все блоки с абсолютным позиционированием
-                $(this.jQueryImages).parent().css('position', 'absolute');
+                $(this.jQueryImages).parent().css({'position': 'absolute', 'transition': 'all ' + def.animationSpeed/1000 + 's ease-in-out'});
+                $(this.jQueryImages).css({'transition': 'all ' + def.animationSpeed/1000 + 's ease-in-out'});
             } else {
                 //Строим изображения по входному объекту
                 i = 0;
+
                 for (i; i < this.countImg; i++) {
-                    var tpl = '<' + def.wrap + ' style="width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
-                                '<img class="' + this.config.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px;"/>' +
+                    var tpl = '<' + def.wrap + ' style="transition: all ' + def.animationSpeed/1000 + 's ease-in-out; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
+                                '<img class="' + this.config.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition: all ' + def.animationSpeed/1000 + 's ease-in-out; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px;"/>' +
                               '</' + def.wrap + '>'
                     $(this.el).append(tpl);
                 }
                 //высчитываем смещения
-                this.jqueryImages = $(this.el).find('img' + '.' + this.config.imgClass);
+                this.jQueryImages = $(this.el).find('img' + '.' + this.config.imgClass);
                 i = 0;
                 for (i; i < this.countImg; i++) {
-                    this.jqueryImages[i].parentNode.style.top = this.jqueryImages[i].parentNode.offsetTop - def.padding + 'px';
-                    this.jqueryImages[i].parentNode.style.left = this.jqueryImages[i].parentNode.offsetLeft - def.padding + 'px';
+                    this.jQueryImages[i].parentNode.style.top = this.jQueryImages[i].parentNode.offsetTop - def.padding + 'px';
+                    this.jQueryImages[i].parentNode.style.left = this.jQueryImages[i].parentNode.offsetLeft - def.padding + 'px';
 
                 }
                 this.el.style.height = $(this.el).height() + 'px';
-                $(this.jqueryImages).parent().css('position', 'absolute');
+                $(this.jQueryImages).parent().css('position', 'absolute');
             }
 
         } else {
@@ -353,10 +368,23 @@
                 iter += this.string[i]['count'];
             }
             //запускаем анимацию
-            if (this.inputType) {
-                i = 0;
-                var count = this.countImg;
-                for (i; i < count; i++) {
+            i = 0;
+            var count = this.countImg;
+            for (i; i < count; i++) {
+
+                if (this.trans) {
+                   $(this.jQueryImages[i]).parent().css({'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h']});
+                   $(this.jQueryImages[i]).css({'width': this.wi[i]['w'],'height': this.wi[i]['h']});
+
+                    this.jQueryImages[i].addEventListener('transitionend', function (x) {
+                        if (x === count - 1) {
+                          setTimeout(function () {
+                              console.log('the end');
+                              frResize = 0;
+                          }, 500);
+                        }
+                    }(i), false);
+                } else {
                     $(this.jQueryImages[i]).animate({ 'width': this.wi[i]['w'], 'height': this.wi[i]['h'] }, def.animationSpeed).parent()
                     .animate({ 'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h'] }, def.animationSpeed, function (x) {
                         if (x === count - 1) {
@@ -366,24 +394,9 @@
                         }
                     } (i));
                 }
-                this.el.style.height = totalHeight + 20 + 'px';
-            } else {
-                //console.log(this.jqueryImages);
-                i = 0;
-                var count = this.countImg;
-                for (i; i < count; i++) {
-                    $(this.jqueryImages[i]).animate({ 'width': this.wi[i]['w'], 'height': this.wi[i]['h'] }, def.animationSpeed).parent()
-                    .animate({ 'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h'] }, def.animationSpeed, function (x) {
-                        if (x === count - 1) {
-                            setTimeout(function () {
-                                frResize = 0;
-                            }, 100);
-                        }
-                    } (i));
-                }
-                this.el.style.height = totalHeight + 20 + 'px';
-            }
 
+            }
+            this.el.style.height = totalHeight + 20 + 'px';
         }
     }
 
