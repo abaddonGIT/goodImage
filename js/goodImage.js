@@ -57,7 +57,7 @@
     /*
     * Получаем объект дом javascript из переданного html кода
     * @param {String} html-код
-    * @return {Object} 
+    * @return {Object}
     */
     simpleImage.prototype.setElement = function (html) {
         var div = document.createElement('div');
@@ -78,7 +78,7 @@
             resizeLurking = function () {
                 if (+new Date - time >= TIME_IDLE) {
                     widthBody = $('html').width();
-                    
+
                     if (widthBody < fun.config.minWidth) {
                         fun.config.maxWidth = fun.config.minWidth;
                     } else {
@@ -91,7 +91,6 @@
                         timerID = null;
                     }
                 }
-            'cacheVar': {}
             };
 
         //Выбираем к чему прилепить событие
@@ -298,7 +297,7 @@
                     }
                 }
                 this.el.style.height = $(this.el).height() + 'px';
-                //делаем все блоки с абсолютным позиционированием 
+                //делаем все блоки с абсолютным позиционированием
                 $(this.jQueryImages).parent().css('position', 'absolute');
             } else {
                 //Строим изображения по входному объекту
@@ -329,7 +328,7 @@
                 iter = 0,
                 totalHeight = def.padding; //общая высота
 
-            //Сохраняем насоящие положение элементов 
+            //Сохраняем насоящие положение элементов
             for (i; i < countST; i++) {
                 for (j = iter; j < iter + this.string[i]['count']; j++) {
                     if (iter === j) {
