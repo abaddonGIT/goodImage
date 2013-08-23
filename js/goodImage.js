@@ -150,7 +150,7 @@
             fun.config.maxWidth = el.offsetHeight;
             fun.images = wn;
             fun.countImg = wn.count;
-            fun.jqueryImages = $(el).find('img' + '.' + fun.config.imgClass);
+            fun.jQueryImages = $(el).find('img' + '.' + fun.config.imgClass);
             fun.building(true);
         });
     }
