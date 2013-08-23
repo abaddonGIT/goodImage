@@ -135,6 +135,16 @@
                 break;
             default:
         }
+
+        //Событие для перезагрузки картинок
+        $(el).bind('relode', function (event, newData) {
+            var wn = JSON.parse(newData);
+            fun.config.maxWidth = el.offsetHeight;
+            fun.images = wn;
+            fun.countImg = wn.count;
+            fun.jqueryImages = $(el).find('img' + '.' + fun.config.imgClass);
+            fun.building(true);
+        });
     }
     /*
     * Рассчет размеров для картинок
@@ -387,12 +397,8 @@
             'source': null,
             'wrap': 'div', //элемент обертка исползуется если передается объект с информацией по которому строятся картинки
             'imgClass': 'simpleImage', //класс изображений по дефолту
-            'transitionAnimate': 0,
             'animationSpeed': 700,
-            'delay': 200, //задержка перед началом анимации
-            'display': 'inline-block',
-            'contHeight': 0,
-            'hoverBorder': 3
+            'display': 'inline-block'
         }, si;
 
         $.extend(def, options);
