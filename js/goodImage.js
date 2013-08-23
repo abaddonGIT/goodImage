@@ -6,47 +6,6 @@
 /*global window, $, jQuery, document */
 (function($) {
     "use strict";
-    function toObject(ob) {
-        var o = {}, ln = ob.length, i = 0, a = [];
-
-        for (i; i < ln; i++) {
-            o[i] = ob[i];
-        }
-        i = 0;
-        for (i in o) {
-            if (o[i] instanceof Array) {
-                a[i] = o[i];
-                o[i] = {};
-                $.extend(o[i], a[i]);
-            }
-        }
-        return o;
-    }
-    ;
-
-    function toArray(ob) {
-        var o = [], i, ln = 0, a = {}, k;
-
-        for (i in ob) {
-            o[i] = [];
-            o[i] = ob[i];
-        }
-        
-        ln = o.length; 
-        i = 0;
-        
-        for (i; i < ln; i++) {
-            if (o[i] instanceof Object) {
-                a = o[i];
-                o[i] = [];
-                for (k in a) {
-                    o[i][k] = a[k];
-                }
-            }
-        }
-        return o;
-    }
-    ;
     //прекращение анимации
     function breakAnimation(el, images, count) {
         var i = 0, ims;
@@ -71,12 +30,13 @@
             'padding': 5, //величина отступов
             'source': {},
             'transitionAnimate': 0,
-            'animationSpeed': 2500,
-            'delay': 200, //задержка перед началом анимации
+            'animationSpeed': 1500,
+            'delay': 100, //задержка перед началом анимации
             'display': 'inline-block',
             'contHeight': 0,
             'hoverBorder': 3,
-            'cacheType': 1
+            'cacheType': 1,
+            'cacheVar': {}
         };
 
         $.extend(def, options);
@@ -106,7 +66,7 @@
                             }
                             break;
                         case 2:
-                            var v = JSON.stringify(toObject(v));
+                            var v = JSON.stringify(v.toObject());
                             localStorage[k] = v;
                             break;
                     }
@@ -122,7 +82,7 @@
                             }
                             break;
                         case 2:
-                            return toArray(JSON.parse(localStorage[k]));
+                            return JSON.parse(localStorage[k]).toArray();
                             break;
                     }
                 }
