@@ -143,7 +143,7 @@
             fun.images = nw;
             fun.countImg = nw.length;
             fun.jqueryImages = $(el).find('img' + '.' + this.config.imgClass);
-            fun.building(true); 
+            fun.building(true);
         });
     }
     /*
