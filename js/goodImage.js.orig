@@ -144,6 +144,15 @@
             default:
         }
 
+<<<<<<< HEAD
+        //событие для перестройки картинок
+        $(el).bind('relode', function (event, newData) {
+            var nw = JSON.parse(newData);
+            fun.config.maxWidth = el.offsetHeight;
+            fun.images = nw;
+            fun.countImg = nw.length;
+            fun.jqueryImages = $(el).find('img' + '.' + this.config.imgClass);
+=======
         //Событие для перезагрузки картинок
         $(el).bind('relode', function (event, newData) {
             var wn = JSON.parse(newData);
@@ -151,6 +160,7 @@
             fun.images = wn;
             fun.countImg = wn.count;
             fun.jQueryImages = $(el).find('img' + '.' + fun.config.imgClass);
+>>>>>>> 6b4329bb9e97fdd1690f7949995bcd03d2e6a7c0
             fun.building(true);
         });
     }

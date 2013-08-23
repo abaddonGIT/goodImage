@@ -45,6 +45,10 @@
                 step = step + 50;
             });
             */
+<<<<<<< HEAD
+
+=======
+>>>>>>> 6b4329bb9e97fdd1690f7949995bcd03d2e6a7c0
             $('#imagesContener2 img').click(function () {
                 console.log('asd');
                 $('#imagesContener2').css('width', step);
