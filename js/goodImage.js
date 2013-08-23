@@ -4,7 +4,7 @@
  * @version 1.0.1
  * ***************************************************/
 /*global window, $, jQuery, document */
-(function ($) {
+(function($) {
     "use strict";
     var frResize = 0, inizialize = 0;
     function simpleImage(el, def) {
@@ -16,6 +16,12 @@
         //опредяем поддержку анимации на css
         if ("transition" in document.createElement('div').style) {
             this.trans = true;
+            this.transWrapCSS = 'width ' + def.animationSpeed / 1000 + 's ease,' +
+                    'height ' + def.animationSpeed / 1000 + 's ease,' +
+                    'top ' + def.animationSpeed / 1000 + 's ease,' +
+                    'left ' + def.animationSpeed / 1000 + 's ease';
+            this.transImgCSS = 'width ' + def.animationSpeed / 1000 + 's ease,' +
+                    'height ' + def.animationSpeed / 1000 + 's ease';
 
         } else {
             this.trans = false;
@@ -27,12 +33,12 @@
         this.adEvent();
     }
     /*
-    *Подготавливает перед пуском (удалет прослушку событий и рвет анимации)
-    */
-    simpleImage.prototype.preparation = function () {
+     *Подготавливает перед пуском (удалет прослушку событий и рвет анимации)
+     */
+    simpleImage.prototype.preparation = function() {
         var m = {};
         this.el.style.position = 'relative';
-        this.el.style.overflow = 'hidden';
+        //this.el.style.overflow = 'hidden';
         this.el.style.width = this.config.maxWidth + this.config.padding * 2 + 'px';
         //сносим события ресайзов
         //window.removeEventListener('resize',1);
@@ -63,11 +69,11 @@
         }
     };
     /*
-    * Получаем объект дом javascript из переданного html кода
-    * @param {String} html-код
-    * @return {Object}
-    */
-    simpleImage.prototype.setElement = function (html) {
+     * Получаем объект дом javascript из переданного html кода
+     * @param {String} html-код
+     * @return {Object}
+     */
+    simpleImage.prototype.setElement = function(html) {
         var div = document.createElement('div');
         div.innerHTML = html;
         var el = div.childNodes[0];
@@ -75,31 +81,31 @@
         return el;
     };
     /*
-    *Добавляет прослушку событий изменения размера контейнера
-    */
-    simpleImage.prototype.adEvent = function () {
+     *Добавляет прослушку событий изменения размера контейнера
+     */
+    simpleImage.prototype.adEvent = function() {
         var widthBody,
-            el = this.el,
-            def = this.config,
-            fun = this,
-            timerID = 0, time = 0, TIME_IDLE = 500, step = 0,
-            resizeLurking = function () {
-                if (+new Date - time >= TIME_IDLE) {
-                    widthBody = $('html').width();
+                el = this.el,
+                def = this.config,
+                fun = this,
+                timerID = 0, time = 0, TIME_IDLE = 500, step = 0,
+                resizeLurking = function() {
+            if (+new Date - time >= TIME_IDLE) {
+                widthBody = $('html').width();
 
-                    if (widthBody < fun.config.minWidth) {
-                        fun.config.maxWidth = fun.config.minWidth;
-                    } else {
-                        fun.config.maxWidth = widthBody;
-                    }
-                    fun.building(true);
-
-                    if (timerID) {//удаляем таймер
-                        window.clearInterval(timerID);
-                        timerID = null;
-                    }
+                if (widthBody < fun.config.minWidth) {
+                    fun.config.maxWidth = fun.config.minWidth;
+                } else {
+                    fun.config.maxWidth = widthBody;
                 }
-            };
+                fun.building(true);
+
+                if (timerID) {//удаляем таймер
+                    window.clearInterval(timerID);
+                    timerID = null;
+                }
+            }
+        };
 
         //Выбираем к чему прилепить событие
         switch (def.resize) {
@@ -109,7 +115,7 @@
                         frame = this.setElement('<iframe id="' + frID + '" name="' + frID + '" style="width: 100%; height: 100%; position:absolute;z-index:-1;top:0;left:0;border: none;"></iframe>');
                 el.appendChild(frame);
 
-                frames[frID].onresize = function () {
+                frames[frID].onresize = function() {
                     //console.log('asd');
                     if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) {
                         step++;
@@ -134,7 +140,7 @@
                 };
                 break;
             case 2:
-                window.addEventListener('resize', function () {
+                window.addEventListener('resize', function() {
                     if (!timerID) {
                         timerID = window.setInterval(resizeLurking, 55);
                     }
@@ -142,10 +148,11 @@
                 }, 1);
                 break;
             default:
-        };
+        }
+        ;
 
         //Событие для перезагрузки картинок
-        $(el).bind('relode', function (event, newData) {
+        $(el).bind('relode', function(event, newData) {
             var wn = JSON.parse(newData);
             fun.config.maxWidth = el.offsetHeight;
             fun.images = wn;
@@ -153,32 +160,100 @@
             fun.jQueryImages = $(el).find('img' + '.' + fun.config.imgClass);
             fun.building(true);
         });
+        //Добавляем hover эффекты
+        var effect = def.hoverEffect.type, effectCSS = def.hoverEffect.css;
+        $(el).children().hover(
+                function() {
+                    switch (effect) {
+                        case 'border':
+                            if (effectCSS === undefined) {
+                                $(this).css({
+                                    'margin': def.padding - 3,
+                                    'border': '3px solid #00b4f0'
+                                });
+                            } else {
+                                $(this).css({
+                                    'margin': def.padding - effectCSS.width,
+                                    'border': effectCSS.width + 'px ' + effectCSS.style + ' ' + effectCSS.color
+                                });
+                            }
+                            break;
+                        case 'scale':
+                            if (effectCSS === undefined) {
+                                $(this).css('overflow', 'hidden').find('img.' + def.imgClass).css({'transition': '1s ease', 'transform': 'scale(1.2)'});
+                            } else {
+                                $(this).css('overflow', 'hidden').find('img.' + def.imgClass).css({'transition': '1s ease', 'transform': 'scale(' + effectCSS.scale + ')'});
+                            }
+                            break;
+                        case 'scaleAll':
+                            if (effectCSS === undefined) {
+                                $(this).css({'transform': 'scale(1.2)', 'z-index': 2}).find('img.' + def.imgClass).css({'transition': '1s ease', 'transform': 'scale(1.2)'});
+                            } else {
+                                $(this).css('transform', 'scale(' + effectCSS.scale + ')').find('img.' + def.imgClass).css({'transition': '1s ease', 'transform': 'scale(' + effectCSS.scale + ')'});
+                            }
+                            break;
+                        case 'shadow':
+                            if (effectCSS === undefined) {
+                                $(this).css('box-shadow', '0 0 10px #000');
+                            } else {
+                                $(this).css('box-shadow', effectCSS);
+                            }
+                            break;
+                        default:
+
+                    }
+                    def.hoverIn(this);
+                },
+                function() {
+                    switch (effect) {
+                        case 'border':
+                            $(this).css({
+                                'border': 'none',
+                                'margin': def.padding
+                            });
+                            break;
+                        case 'scale':
+                            $(this).find('img.' + def.imgClass).css({'transform': 'none', 'transition': fun.transImgCSS});
+                            break;
+                        case 'scaleAll':
+                            $(this).css({'transform': 'none', 'z-index': 1}).find('img.' + def.imgClass).css({'transform': 'none', 'transition': fun.transImgCSS});
+                            break;
+                        case 'shadow':
+                            $(this).css('box-shadow', 'none');
+                            break;
+                        default:
+
+                    }
+
+                    def.hoverOut(this);
+
+                });
     };
     /*
-    * Рассчет размеров для картинок
-    */
-    simpleImage.prototype.calculation = function () {
+     * Рассчет размеров для картинок
+     */
+    simpleImage.prototype.calculation = function() {
         var images = this.images, //Содержит инфу о картинках
-            countImg = this.countImg, //Общее кол-во картинок
-            def = this.config, //конфиг
-            th = this,
-            iter,
-            totalHeight,
-            imagesLn,
-            blocks,
-            leng,
-            image = 0,
-            string = [],
-            p = 0,
-            wi = [],
-            count,
-            width,
-            h,
-            countInString,
-            allCount,
-            maxWidth,
-            lwidth,
-            w, wt, wr, i, j, b, step, timer;
+                countImg = this.countImg, //Общее кол-во картинок
+                def = this.config, //конфиг
+                th = this,
+                iter,
+                totalHeight,
+                imagesLn,
+                blocks,
+                leng,
+                image = 0,
+                string = [],
+                p = 0,
+                wi = [],
+                count,
+                width,
+                h,
+                countInString,
+                allCount,
+                maxWidth,
+                lwidth,
+                w, wt, wr, i, j, b, step, timer;
 
         //сброс анимации элементов при инициализации
 
@@ -273,10 +348,10 @@
         this.wi = wi;
     };
     /*
-    * Выстраивает изображения и осуществляет анимацию при перемещении
-    * @param {Boolean} ключ указывает надо ли включать анимацию
-    */
-    simpleImage.prototype.building = function (animation) {
+     * Выстраивает изображения и осуществляет анимацию при перемещении
+     * @param {Boolean} ключ указывает надо ли включать анимацию
+     */
+    simpleImage.prototype.building = function(animation) {
         var def = this.config, i = 0;
         //расчет размеров картинки
         this.calculation();
@@ -301,7 +376,8 @@
                             'width': this.wi[i]['w'] + 'px',
                             'height': this.wi[i]['h'] + 'px',
                             'margin': def.padding + 'px',
-                            'display': 'inline-block'
+                            'display': 'inline-block',
+                            'opacity': def.opacity
                         });
                         this.jQueryImages[i].parentNode.style.left = this.jQueryImages[i].parentNode.offsetLeft - def.padding + 'px';
                         this.jQueryImages[i].parentNode.style.top = this.jQueryImages[i].parentNode.offsetTop - def.padding + 'px';
@@ -314,23 +390,27 @@
                     }
 
                     if (i === this.countImg - 1) {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             frResize = 0;
                         }, 100);
                     }
                 }
                 this.el.style.height = $(this.el).height() + 'px';
                 //делаем все блоки с абсолютным позиционированием
-                $(this.jQueryImages).parent().css({'position': 'absolute', 'transition': 'all ' + def.animationSpeed/1000 + 's ease-in-out'});
-                $(this.jQueryImages).css({'transition': 'all ' + def.animationSpeed/1000 + 's ease-in-out'});
+                $(this.jQueryImages).parent().css({'position': 'absolute', 'transition': this.transWrapCSS});
+                $(this.jQueryImages).css({'transition': this.transImgCSS});
+                //плавное появление
+                if (def.fade) {
+                    $(this.jQueryImages).parent().fadeTo(def.fadeTime, 1);
+                }
             } else {
                 //Строим изображения по входному объекту
                 i = 0;
 
                 for (i; i < this.countImg; i++) {
-                    var tpl = '<' + def.wrap + ' style="transition: all ' + def.animationSpeed/1000 + 's ease-in-out; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
-                                '<img class="' + this.config.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition: all ' + def.animationSpeed/1000 + 's ease-in-out; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px;"/>' +
-                              '</' + def.wrap + '>'
+                    var tpl = '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
+                            '<img class="' + this.config.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px;"/>' +
+                            '</' + def.wrap + '>';
                     $(this.el).append(tpl);
                 }
                 //высчитываем смещения
@@ -343,15 +423,20 @@
                 }
                 this.el.style.height = $(this.el).height() + 'px';
                 $(this.jQueryImages).parent().css('position', 'absolute');
+                
+                //плавное появление
+                if (def.fade) {
+                    $(this.jQueryImages).parent().fadeTo(def.fadeTime, 1);
+                }
             }
 
         } else {
 
             var countST = this.string.length,
-                i = 0,
-                j,
-                iter = 0,
-                totalHeight = def.padding; //общая высота
+                    i = 0,
+                    j,
+                    iter = 0,
+                    totalHeight = def.padding; //общая высота
 
             //Сохраняем насоящие положение элементов
             for (i; i < countST; i++) {
@@ -373,26 +458,26 @@
             for (i; i < count; i++) {
 
                 if (this.trans) {
-                   $(this.jQueryImages[i]).parent().css({'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h']});
-                   $(this.jQueryImages[i]).css({'width': this.wi[i]['w'],'height': this.wi[i]['h']});
+                    $(this.jQueryImages[i]).parent().css({'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h']});
+                    $(this.jQueryImages[i]).css({'width': this.wi[i]['w'], 'height': this.wi[i]['h']});
 
-                    this.jQueryImages[i].addEventListener('transitionend', function (x) {
+                    this.jQueryImages[i].addEventListener('transitionend', function(x) {
                         if (x === count - 1) {
-                          setTimeout(function () {
-                              console.log('the end');
-                              frResize = 0;
-                          }, 500);
+                            setTimeout(function() {
+                                console.log('the end');
+                                frResize = 0;
+                            }, 500);
                         }
                     }(i), false);
                 } else {
-                    $(this.jQueryImages[i]).animate({ 'width': this.wi[i]['w'], 'height': this.wi[i]['h'] }, def.animationSpeed).parent()
-                    .animate({ 'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h'] }, def.animationSpeed, function (x) {
+                    $(this.jQueryImages[i]).animate({'width': this.wi[i]['w'], 'height': this.wi[i]['h']}, def.animationSpeed).parent()
+                            .animate({'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h']}, def.animationSpeed, function(x) {
                         if (x === count - 1) {
-                            setTimeout(function () {
+                            setTimeout(function() {
                                 frResize = 0;
                             }, 100);
                         }
-                    } (i));
+                    }(i));
                 }
 
             }
@@ -400,7 +485,7 @@
         }
     };
 
-    $.fn.goodImage = function (options) {
+    $.fn.goodImage = function(options) {
         var def = {
             'maxWidth': 600, //максимальная длинна, для блока с фотками
             'resize': 1, //событие для расайза (1-контейнет с фотками, 2-окно браузера 0 - не отслеживает размер)
@@ -411,14 +496,24 @@
             'wrap': 'div', //элемент обертка исползуется если передается объект с информацией по которому строятся картинки
             'imgClass': 'simpleImage', //класс изображений по дефолту
             'animationSpeed': 700,
-            'display': 'inline-block'
+            'display': 'inline-block',
+            'opacity': 0,
+            'fade': true,
+            'fadeTime': 1500,
+            'hoverEffect': {//эффект при наведении мыши
+                'type': 'scaleAll'
+            },
+            'hoverIn': function(el) {
+            },
+            'hoverOut': function(el) {
+            }
         }, si;
 
         $.extend(def, options);
 
-        return this.each(function () {
+        return this.each(function() {
 
             si = new simpleImage(this, def);
         });
     };
-} (jQuery));
+}(jQuery));
