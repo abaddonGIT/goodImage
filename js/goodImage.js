@@ -6,7 +6,7 @@
 /*global window, $, jQuery, document */
 (function($) {
     "use strict";
-    var frResize = 0, inizialize = 0;
+    var frResize = 0;
     function simpleImage(el, def) {
         this.el = el;
         this.config = def;
@@ -347,6 +347,40 @@
         this.string = string; //содержит параметры строк (их высоту и кол-во картинок в них)
         this.wi = wi;
     };
+    
+    /*
+     * Преобразует массив в json строку
+     * @param {Array} arr - входной массив
+     * @returns {String}
+     */
+    simpleImage.prototype.toJSON = function(arr) {
+        var parts = [], arL = arr.length, pod = [], i = 0, s = '[';
+
+        for (i; i < arL; i++) {
+            s += '{';
+            pod = [];
+            for (var j in arr[i]) {
+                if (typeof arr[i][j] === "number") {
+                    pod.push('"' + j + '":' + arr[i][j]);
+                } else {
+                    pod.push('"' + j + '":' + '"' + arr[i][j] + '"');
+                }
+            }
+
+            s += pod.join();
+            
+            if (i === arL - 1) {
+                s += '}';
+            } else {
+                s += '},';
+            }
+        }
+
+        s += ']';
+        
+        return s;
+    };
+   
     /*
      * Выстраивает изображения и осуществляет анимацию при перемещении
      * @param {Boolean} ключ указывает надо ли включать анимацию
@@ -406,24 +440,27 @@
             } else {
                 //Строим изображения по входному объекту
                 i = 0;
-
+                var tpl;
                 for (i; i < this.countImg; i++) {
-                    var tpl = '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
+                    tpl += '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
                             '<img class="' + this.config.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px;"/>' +
                             '</' + def.wrap + '>';
-                    $(this.el).append(tpl);
                 }
+                
+                $(this.el).append(tpl);
                 //высчитываем смещения
                 this.jQueryImages = $(this.el).find('img' + '.' + this.config.imgClass);
                 i = 0;
+                
                 for (i; i < this.countImg; i++) {
                     this.jQueryImages[i].parentNode.style.top = this.jQueryImages[i].parentNode.offsetTop - def.padding + 'px';
                     this.jQueryImages[i].parentNode.style.left = this.jQueryImages[i].parentNode.offsetLeft - def.padding + 'px';
-
                 }
+                
+                
                 this.el.style.height = $(this.el).height() + 'px';
                 $(this.jQueryImages).parent().css('position', 'absolute');
-                
+
                 //плавное появление
                 if (def.fade) {
                     $(this.jQueryImages).parent().fadeTo(def.fadeTime, 1);
@@ -464,7 +501,6 @@
                     this.jQueryImages[i].addEventListener('transitionend', function(x) {
                         if (x === count - 1) {
                             setTimeout(function() {
-                                console.log('the end');
                                 frResize = 0;
                             }, 500);
                         }
