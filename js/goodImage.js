@@ -36,11 +36,7 @@
      *Подготавливает перед пуском (удалет прослушку событий и рвет анимации)
      */
     simpleImage.prototype.preparation = function() {
-        var m = {};
-        this.el.style.position = 'relative';
-        //this.el.style.overflow = 'hidden';
-        this.el.style.width = this.config.maxWidth + this.config.padding * 2 + 'px';
-        //сносим события ресайзов
+        var m = {}, el = this.el, w;
         //window.removeEventListener('resize',1);
 
         var i = 0, ims;
@@ -67,6 +63,11 @@
             this.jQueryImages = this.images;
             this.images = m;
         }
+
+        el.style.position = 'relative';
+        el.style.fontSize = 0;
+        w = this.config.maxWidth + this.config.padding * 2;
+        el.style.cssText += 'overflow: hidden; width:' + w + 'px; margin: 0 -5px; fontSize: 0;';
     };
     /*
      * Получаем объект дом javascript из переданного html кода
@@ -347,7 +348,7 @@
         this.string = string; //содержит параметры строк (их высоту и кол-во картинок в них)
         this.wi = wi;
     };
-    
+
     /*
      * Преобразует массив в json строку
      * @param {Array} arr - входной массив
@@ -368,7 +369,7 @@
             }
 
             s += pod.join();
-            
+
             if (i === arL - 1) {
                 s += '}';
             } else {
@@ -377,93 +378,98 @@
         }
 
         s += ']';
-        
+
         return s;
     };
-   
+
     /*
      * Выстраивает изображения и осуществляет анимацию при перемещении
      * @param {Boolean} ключ указывает надо ли включать анимацию
      */
     simpleImage.prototype.building = function(animation) {
-        var def = this.config, i = 0;
+        var def = this.config, i = 0, c = this.countImg, inForIm, inForP, el = this.el, t, l, imgP = [], img = [], w, wi;
         //расчет размеров картинки
         this.calculation();
-        //var wi = this.wi;
-
         //строим картинки
-        this.el.style.fontSize = 0;
-        this.el.style.margin = '0 -5px';
+        wi = this.wi;
 
         if (!animation) {
 
             if (this.inputType) {
                 i = 0;
+                var a = Date.now();
 
-                for (i; i < this.countImg; i++) {
+                for (i; i < c; i++) {
+                    inForIm = this.jQueryImages[i];
+                    inForP = this.jQueryImages[i].parentNode;
                     //стили картинок
-                    $(this.jQueryImages[i]).css({'width': this.wi[i]['w'] + 'px', 'height': this.wi[i]['h'] + 'px'});
+                    inForIm.style.cssText = 'width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;';
 
                     //стили оберток
-                    if (this.jQueryImages[i].parentNode !== null) {
-                        $(this.jQueryImages[i]).parent().css({
-                            'width': this.wi[i]['w'] + 'px',
-                            'height': this.wi[i]['h'] + 'px',
-                            'margin': def.padding + 'px',
-                            'display': 'inline-block',
-                            'opacity': def.opacity
-                        });
-                        this.jQueryImages[i].parentNode.style.left = this.jQueryImages[i].parentNode.offsetLeft - def.padding + 'px';
-                        this.jQueryImages[i].parentNode.style.top = this.jQueryImages[i].parentNode.offsetTop - def.padding + 'px';
+                    if (inForP !== null) {
+                        inForP.style.cssText = 'width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px; margin:' + def.padding + 'px; display: inline-block; opacity' + def.opacity + ';';
+
+                        t = inForP.offsetLeft - def.padding;
+                        l = inForP.offsetTop - def.padding;
+
+                        inForP.style.cssText += 'left:' + t + 'px; top:' + l + 'px;';
                     } else {
-                        $(this.jQueryImages[i]).css({
-                            'margin': def.padding + 'px'
-                        });
-                        this.jQueryImages[i].style.left = this.jQueryImages[i].offsetLeft + 'px';
-                        this.jQueryImages[i].style.top = this.jQueryImages[i].offsetTop + 'px';
+                        t = inForIm.offsetLeft;
+                        l = inForIm.offsetTop;
+                        inForIm.style.cssText += 'margin:' + def.padding + 'px; left:' + t + 'px; top:' + l + 'px;';
                     }
 
-                    if (i === this.countImg - 1) {
+                    if (i === c - 1) {
                         setTimeout(function() {
                             frResize = 0;
                         }, 100);
                     }
+                    img.push(inForIm);
+                    imgP.push(inForP);
                 }
-                this.el.style.height = $(this.el).height() + 'px';
+                var b = Date.now();
+                
+                console.log(b - a);
+                
+                el.style.height = $(el).height() + 'px';
                 //делаем все блоки с абсолютным позиционированием
-                $(this.jQueryImages).parent().css({'position': 'absolute', 'transition': this.transWrapCSS});
-                $(this.jQueryImages).css({'transition': this.transImgCSS});
+                $(imgP).css({'position': 'absolute', 'transition': this.transWrapCSS});
+                $(img).css('transition', this.transImgCSS);
+
                 //плавное появление
                 if (def.fade) {
-                    $(this.jQueryImages).parent().fadeTo(def.fadeTime, 1);
+                    $(imgP).fadeTo(def.fadeTime, 1);
                 }
             } else {
                 //Строим изображения по входному объекту
                 i = 0;
-                var tpl;
-                for (i; i < this.countImg; i++) {
-                    tpl += '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
-                            '<img class="' + this.config.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + this.wi[i]['w'] + 'px; height: ' + this.wi[i]['h'] + 'px;"/>' +
+                var tpl = '';
+                for (i; i < c; i++) {
+                    tpl += '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
+                            '<img class="' + def.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px;"/>' +
                             '</' + def.wrap + '>';
                 }
-                
-                $(this.el).append(tpl);
+
+                $(el).append(tpl);
                 //высчитываем смещения
-                this.jQueryImages = $(this.el).find('img' + '.' + this.config.imgClass);
+                this.jQueryImages = $(el).find('img' + '.' + def.imgClass);
                 i = 0;
-                
+
                 for (i; i < this.countImg; i++) {
-                    this.jQueryImages[i].parentNode.style.top = this.jQueryImages[i].parentNode.offsetTop - def.padding + 'px';
-                    this.jQueryImages[i].parentNode.style.left = this.jQueryImages[i].parentNode.offsetLeft - def.padding + 'px';
+                    inForP = this.jQueryImages[i].parentNode;
+                    t = inForP.offsetLeft - def.padding;
+                    l = inForP.offsetTop - def.padding;
+                    inForP.style.cssText += 'left:' + t + 'px; top:' + l + 'px;';
+                    imgP.push(inForP);
                 }
-                
-                
-                this.el.style.height = $(this.el).height() + 'px';
-                $(this.jQueryImages).parent().css('position', 'absolute');
+
+
+                el.style.height = $(el).height() + 'px';
+                $(imgP).css('position', 'absolute');
 
                 //плавное появление
                 if (def.fade) {
-                    $(this.jQueryImages).parent().fadeTo(def.fadeTime, 1);
+                    $(imgP).fadeTo(def.fadeTime, 1);
                 }
             }
 
@@ -473,32 +479,35 @@
                     i = 0,
                     j,
                     iter = 0,
-                    totalHeight = def.padding; //общая высота
+                    totalHeight = def.padding, inForStL, st = this.string; //общая высота
 
             //Сохраняем насоящие положение элементов
             for (i; i < countST; i++) {
-                for (j = iter; j < iter + this.string[i]['count']; j++) {
+                inForStL = st[i]['count'];
+                for (j = iter; j < iter + inForStL; j++) {
                     if (iter === j) {
-                        this.wi[iter]['left'] = 0;
+                        wi[iter]['left'] = 0;
                     } else {
-                        this.wi[j]['left'] = this.wi[j - 1]['left'] + this.wi[j - 1]['w'] + def.padding * 2;
+                        wi[j]['left'] = wi[j - 1]['left'] + wi[j - 1]['w'] + def.padding * 2;
                     }
 
-                    this.wi[j]['top'] = totalHeight + 10 * i;
+                    wi[j]['top'] = totalHeight + 10 * i;
                 }
-                totalHeight += this.string[i]['h'];
-                iter += this.string[i]['count'];
+                totalHeight += st[i]['h'];
+                iter += st[i]['count'];
             }
             //запускаем анимацию
             i = 0;
             var count = this.countImg;
             for (i; i < count; i++) {
+                inForP = this.jQueryImages[i].parentNode;
+                inForIm = this.jQueryImages[i];
 
                 if (this.trans) {
-                    $(this.jQueryImages[i]).parent().css({'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h']});
-                    $(this.jQueryImages[i]).css({'width': this.wi[i]['w'], 'height': this.wi[i]['h']});
+                    $(inForP).css({'top': wi[i]['top'] - def.padding, 'left': wi[i]['left'], 'width': wi[i]['w'], 'height': wi[i]['h']});
+                    $(inForIm).css({'width': wi[i]['w'], 'height': wi[i]['h']});
 
-                    this.jQueryImages[i].addEventListener('transitionend', function(x) {
+                    inForIm.addEventListener('transitionend', function(x) {
                         if (x === count - 1) {
                             setTimeout(function() {
                                 frResize = 0;
@@ -506,8 +515,8 @@
                         }
                     }(i), false);
                 } else {
-                    $(this.jQueryImages[i]).animate({'width': this.wi[i]['w'], 'height': this.wi[i]['h']}, def.animationSpeed).parent()
-                            .animate({'top': this.wi[i]['top'] - def.padding, 'left': this.wi[i]['left'], 'width': this.wi[i]['w'], 'height': this.wi[i]['h']}, def.animationSpeed, function(x) {
+                    $(inForIm).animate({'width': wi[i]['w'], 'height': wi[i]['h']}, def.animationSpeed).parent()
+                            .animate({'top': wi[i]['top'] - def.padding, 'left': wi[i]['left'], 'width': wi[i]['w'], 'height': wi[i]['h']}, def.animationSpeed, function(x) {
                         if (x === count - 1) {
                             setTimeout(function() {
                                 frResize = 0;
@@ -517,7 +526,7 @@
                 }
 
             }
-            this.el.style.height = totalHeight + 20 + 'px';
+            el.style.height = totalHeight + 20 + 'px';
         }
     };
 
