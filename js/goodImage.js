@@ -36,31 +36,34 @@
      *Подготавливает перед пуском (удалет прослушку событий и рвет анимации)
      */
     simpleImage.prototype.preparation = function() {
-        var m = {}, el = this.el, w;
+        var m = {}, el = this.el, w, c = this.countImg, images = this.images, def = this.config, imInFor, imInForP;
         //window.removeEventListener('resize',1);
 
         var i = 0, ims;
-        if (this.images.selector === undefined) {
-            ims = $(this.el).find('img' + '.' + this.config.imgClass);
-            for (i; i < this.countImg; i++) {
-                $(ims[i]).stop(true);
-                $(ims[i]).parent().stop(true);
+        if (images.selector === undefined) {
+            ims = $(el).find('img' + '.' + def.imgClass);
+            for (i; i < c; i++) {
+                imInFor = ims[i];
+                $(imInFor).stop(true);
+                $(imInFor).parent().stop(true);
             }
         } else {
             //если у нас в images объекты jquery то переписываем его
-            for (i; i < this.countImg; i++) {
+            for (i; i < c; i++) {
+                imInFor = this.images[i];
+                imInForP = this.images[i].parentNode;
 
                 m[i] = {
-                    'height': $(this.images[i]).height(),
-                    'width': $(this.images[i]).width(),
-                    'link': $(this.images[i]).attr('src')
+                    'height': $(imInFor).height(),
+                    'width': $(imInFor).width(),
+                    'link': $(imInFor).attr('src')
                 };
 
-                $(this.images[i]).stop(true);
-                $(this.images[i]).parent().stop(true);
+                $(imInFor).stop(true);
+                $(imInForP).stop(true);
             }
             this.inputType = 1;
-            this.jQueryImages = this.images;
+            this.jQueryImages = images;
             this.images = m;
         }
 
@@ -387,7 +390,7 @@
      * @param {Boolean} ключ указывает надо ли включать анимацию
      */
     simpleImage.prototype.building = function(animation) {
-        var def = this.config, i = 0, c = this.countImg, inForIm, inForP, el = this.el, t, l, imgP = [], img = [], w, wi;
+        var def = this.config, i = 0, c = this.countImg, inForIm, inForP, el = this.el, t, l, imgP = [], img = [], w, wi, images;
         //расчет размеров картинки
         this.calculation();
         //строим картинки
@@ -445,8 +448,9 @@
                 i = 0;
                 var tpl = '';
                 for (i; i < c; i++) {
+                    images = this.images[i];
                     tpl += '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
-                            '<img class="' + def.imgClass + '" src="' + this.images[i]['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px;"/>' +
+                            '<img class="' + def.imgClass + '" src="' + images['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px;"/>' +
                             '</' + def.wrap + '>';
                 }
 
@@ -455,7 +459,7 @@
                 this.jQueryImages = $(el).find('img' + '.' + def.imgClass);
                 i = 0;
 
-                for (i; i < this.countImg; i++) {
+                for (i; i < c; i++) {
                     inForP = this.jQueryImages[i].parentNode;
                     t = inForP.offsetLeft - def.padding;
                     l = inForP.offsetTop - def.padding;
@@ -498,8 +502,7 @@
             }
             //запускаем анимацию
             i = 0;
-            var count = this.countImg;
-            for (i; i < count; i++) {
+            for (i; i < c; i++) {
                 inForP = this.jQueryImages[i].parentNode;
                 inForIm = this.jQueryImages[i];
 
@@ -508,7 +511,7 @@
                     $(inForIm).css({'width': wi[i]['w'], 'height': wi[i]['h']});
 
                     inForIm.addEventListener('transitionend', function(x) {
-                        if (x === count - 1) {
+                        if (x === c - 1) {
                             setTimeout(function() {
                                 frResize = 0;
                             }, 500);
@@ -517,7 +520,7 @@
                 } else {
                     $(inForIm).animate({'width': wi[i]['w'], 'height': wi[i]['h']}, def.animationSpeed).parent()
                             .animate({'top': wi[i]['top'] - def.padding, 'left': wi[i]['left'], 'width': wi[i]['w'], 'height': wi[i]['h']}, def.animationSpeed, function(x) {
-                        if (x === count - 1) {
+                        if (x === c - 1) {
                             setTimeout(function() {
                                 frResize = 0;
                             }, 100);
