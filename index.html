@@ -18,15 +18,15 @@
         </div>
         <hr />
         <div id="imagesContener2">
-            <div><img class="simpleImage" src="img/01.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/006.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/02.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/03.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/04.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/002.jpg" alt=""/></div>
-            <div> <img class="simpleImage" src="img/005.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/006.jpg" alt=""/></div>
-            <div><img class="simpleImage" src="img/02.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/01.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/006.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/02.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/03.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/04.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/002.jpg" alt=""/></div>
+            <div class="imgParent"> <img class="simpleImage" src="img/005.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/006.jpg" alt=""/></div>
+            <div class="imgParent"><img class="simpleImage" src="img/02.jpg" alt=""/></div>
         </div>
         <!--
         <img src="img/01.jpg" alt=""/>
@@ -38,15 +38,8 @@
 
             //тестовый массив для VVS
             var step = 400;
-            //проверочка ресайза
-            /*
-            $(document).on('click', '#imagesContener img', function () {
-                $('#imagesContener').css('width', step);
-                step = step + 50;
-            });
-            */
+        
             $('#imagesContener2 img').click(function () {
-                console.log('asd');
                 $('#imagesContener2').css('width', step);
                 step = step + 50;
             });

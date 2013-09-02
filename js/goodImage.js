@@ -51,7 +51,7 @@
             //если у нас в images объекты jquery то переписываем его
             for (i; i < c; i++) {
                 imInFor = this.images[i];
-                imInForP = this.images[i].parentNode;
+                imInForP = $(this.images[i]).parents('.' + def.parentClass);
 
                 m[i] = {
                     'height': $(imInFor).height(),
@@ -60,7 +60,7 @@
                 };
 
                 $(imInFor).stop(true);
-                $(imInForP).stop(true);
+                imInForP.stop(true);
             }
             this.inputType = 1;
             this.jQueryImages = images;
@@ -83,6 +83,21 @@
         var el = div.childNodes[0];
         div.removeChild(el);
         return el;
+    };
+    /*
+    * Находит родительский элемент и возвращает ссылку на него
+    * @param {Object} - элемент лоя которого ищется родитель
+    * @param {String} - имя класса родителя
+    */
+    simpleImage.prototype.getParent = function (el, classVal) {
+        if (el === undefined) {
+            return false;
+        }
+
+        //Находим перврго родителя и сверяем класс
+        var parClass = el.parentNode.className;
+
+        console.log(parClass);
     };
     /*
      *Добавляет прослушку событий изменения размера контейнера
@@ -400,11 +415,10 @@
 
             if (this.inputType) {
                 i = 0;
-                var a = Date.now();
 
                 for (i; i < c; i++) {
                     inForIm = this.jQueryImages[i];
-                    inForP = this.jQueryImages[i].parentNode;
+                    inForP = $(this.jQueryImages[i]).parents('.' + def.parentClass)[0];
                     //стили картинок
                     inForIm.style.cssText = 'width:' + wi[i]['w'] + 'px; height:' + wi[i]['h'] + 'px;';
 
@@ -430,9 +444,6 @@
                     img.push(inForIm);
                     imgP.push(inForP);
                 }
-                var b = Date.now();
-                
-                console.log(b - a);
                 
                 el.style.height = $(el).height() + 'px';
                 //делаем все блоки с абсолютным позиционированием
@@ -449,7 +460,7 @@
                 var tpl = '';
                 for (i; i < c; i++) {
                     images = this.images[i];
-                    tpl += '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;">' +
+                    tpl += '<' + def.wrap + ' style="transition:' + this.transWrapCSS + '; opacity: ' + def.opacity + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px; margin: ' + def.padding + 'px; display: inline-block;" class="' + def.parentClass + '">' +
                             '<img class="' + def.imgClass + '" src="' + images['link'] + '" alt="" style="transition:' + this.transImgCSS + '; width: ' + wi[i]['w'] + 'px; height: ' + wi[i]['h'] + 'px;"/>' +
                             '</' + def.wrap + '>';
                 }
@@ -460,7 +471,8 @@
                 i = 0;
 
                 for (i; i < c; i++) {
-                    inForP = this.jQueryImages[i].parentNode;
+                    inForP = $(this.jQueryImages[i]).parents('.' + def.parentClass)[0];
+
                     t = inForP.offsetLeft - def.padding;
                     l = inForP.offsetTop - def.padding;
                     inForP.style.cssText += 'left:' + t + 'px; top:' + l + 'px;';
@@ -503,11 +515,11 @@
             //запускаем анимацию
             i = 0;
             for (i; i < c; i++) {
-                inForP = this.jQueryImages[i].parentNode;
+                inForP = $(this.jQueryImages[i]).parents('.' + def.parentClass);
                 inForIm = this.jQueryImages[i];
 
                 if (this.trans) {
-                    $(inForP).css({'top': wi[i]['top'] - def.padding, 'left': wi[i]['left'], 'width': wi[i]['w'], 'height': wi[i]['h']});
+                    inForP.css({'top': wi[i]['top'] - def.padding, 'left': wi[i]['left'], 'width': wi[i]['w'], 'height': wi[i]['h']});
                     $(inForIm).css({'width': wi[i]['w'], 'height': wi[i]['h']});
 
                     inForIm.addEventListener('transitionend', function(x) {
@@ -543,6 +555,7 @@
             'source': null,
             'wrap': 'div', //элемент обертка исползуется если передается объект с информацией по которому строятся картинки
             'imgClass': 'simpleImage', //класс изображений по дефолту
+            'parentClass': 'imgParent',
             'animationSpeed': 700,
             'display': 'inline-block',
             'opacity': 0,
