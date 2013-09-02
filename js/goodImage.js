@@ -85,21 +85,6 @@
         return el;
     };
     /*
-    * Находит родительский элемент и возвращает ссылку на него
-    * @param {Object} - элемент лоя которого ищется родитель
-    * @param {String} - имя класса родителя
-    */
-    simpleImage.prototype.getParent = function (el, classVal) {
-        if (el === undefined) {
-            return false;
-        }
-
-        //Находим перврго родителя и сверяем класс
-        var parClass = el.parentNode.className;
-
-        console.log(parClass);
-    };
-    /*
      *Добавляет прослушку событий изменения размера контейнера
      */
     simpleImage.prototype.adEvent = function() {
@@ -562,7 +547,7 @@
             'fade': true,
             'fadeTime': 1500,
             'hoverEffect': {//эффект при наведении мыши
-                'type': 'scaleAll'
+                'type': 'scale'
             },
             'hoverIn': function(el) {
             },
